@@ -1,0 +1,21 @@
+#!/bin/bash
+
+DATE=$(date +"%F-%H-%M-%S")
+CD_DIR="/dev/shm/cdrom/$DATE"
+CD_SPEED=$(eject -X)
+
+mkdir -p $CD_DIR
+cdparanoia -S $CD_SPEED -B $CD_DIR
+
+TRACKS=$(ls $CD_DIR)
+
+DEST="${HOME}/Music/${DATE}"
+mkdir -p $DEST
+
+for t in $TRACKS;
+do 
+    ffmpeg -i "$CD_DIR/$t" -vn -acodec alac "$DEST/${t%.cdda.wav}.m4a"
+    #echo "$f"
+done
+
+#rm -r $CD_DIR
